@@ -81,35 +81,32 @@
     <main>
         <input type="text" id="searchBox" placeholder="Look for employees...">
         <table id="userTable">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Phone</th>  
-            <th>Email</th>
-            <th>RFID</th>
-        </tr>
-    </thead>
-    <tbody id="userList" hx-get="https://stage.retailsolution.no/ords/posmother/intpay/company"
-           hx-trigger="load"
-           hx-headers='{"Authorization": "Bearer YOUR_AUTH_TOKEN_HERE"}'
-           hx-target="#userList">
-        <tr>
-            <td colspan="4">Loading...</td>
-        </tr>
-    </tbody>
-</table>
-
-
-        </main>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>RFID</th>
+                </tr>
+            </thead>
+            <tbody id="userList" hx-trigger="load" hx-get="" hx-target="#userList">
+                <tr>
+                    <td colspan="4">Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Dummy data for demonstration
-            const users = [
-                { firstName: 'John', lastName: 'Doe', phone: '1234567890', email: 'john.doe@example.com', rfid: '12345' },
-                { firstName: 'Jane', lastName: 'Smith', phone: '9876543210', email: 'jane.smith@example.com', rfid: '54321' },
-                { firstName: 'Michael', lastName: 'Johnson', phone: '4567890123', email: 'michael.johnson@example.com', rfid: '67890' }
-            ];
+            const urlParams = new URLSearchParams(window.location.search);
+            const companyID = urlParams.get('companyID');
+
+            if (companyID) {
+                document.querySelector('#userList').setAttribute('hx-get', `https://localhost:7077/api/company/${companyID}/users`);
+                document.querySelector('#userList').removeAttribute('hx-trigger');
+                htmx.process(document.querySelector('#userList'));
+            }
 
             const searchBox = document.getElementById('searchBox');
             const userList = document.getElementById('userList');
@@ -130,27 +127,5 @@
                 });
             }
 
-            // Initial render
-            renderUsers(users);
-
             // Search functionality
-            searchBox.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const filteredUsers = users.filter(user =>
-                    user.firstName.toLowerCase().includes(searchTerm) ||
-                    user.lastName.toLowerCase().includes(searchTerm) ||
-                    user.email.toLowerCase().includes(searchTerm) ||
-                    user.rfid.toLowerCase().includes(searchTerm)
-                );
-                renderUsers(filteredUsers);
-            });
-
-            // Function to navigate to edit_user.html with user data
-            function editUser(user) {
-                const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
-                window.location.href = `edit_user.html${queryParams}`;
-            }
-        });
-    </script>
-</body>
-</html>
+            search
