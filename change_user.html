@@ -19,12 +19,12 @@
             text-align: center;
             border-bottom: 1px solid #ddd;
             position: relative;
-            height: 60px; /* Adjusted height to accommodate the logo */
+            height: 60px;
         }
         header img {
             position: absolute;
             left: 10px;
-            top: 50%; /* Vertically center the logo */
+            top: 50%;
             transform: translateY(-50%);
             height: 40px;
         }
@@ -34,7 +34,7 @@
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
-            max-width: 800px; /* Adjust as needed */
+            max-width: 800px;
         }
         form {
             display: inline-block;
@@ -71,6 +71,7 @@
             background-color: #f2f2f2;
         }
     </style>
+    <script src="https://unpkg.com/htmx.org"></script>
 </head>
 <body>
     <header id="header">
@@ -89,7 +90,7 @@
                     <th>RFID</th>
                 </tr>
             </thead>
-            <tbody id="userList" hx-trigger="load" hx-get="" hx-target="#userList">
+            <tbody id="userList">
                 <tr>
                     <td colspan="4">Loading...</td>
                 </tr>
@@ -103,47 +104,61 @@
             const companyID = urlParams.get('companyID');
 
             if (companyID) {
-                document.querySelector('#userList').setAttribute('hx-get', `https://localhost:7077/api/company/${companyID}/users`);
-                document.querySelector('#userList').removeAttribute('hx-trigger');
-                htmx.process(document.querySelector('#userList'));
+                const userList = document.querySelector('#userList');
+                const usersUrl = `https://localhost:7077/api/company/${companyID}/users`;
+                
+                // Set hx-get attribute and process HTMX
+                userList.setAttribute('hx-get', usersUrl);
+                userList.removeAttribute('hx-trigger');
+                htmx.process(userList);
+
+                // Fetch users and render them
+                fetch(usersUrl)
+                    .then(response => response.json())
+                    .then(users => {
+                        renderUsers(users);
+                    });
+
+                // Function to render users
+                function renderUsers(users) {
+                    userList.innerHTML = '';
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.firstName} ${user.lastName}</td>
+                            <td>${user.phone}</td>
+                            <td>${user.email}</td>
+                            <td>${user.rfid}</td>
+                        `;
+                        row.onclick = () => editUser(user);
+                        userList.appendChild(row);
+                    });
+                }
+
+                // Function to navigate to edit_user.html with user data
+                function editUser(user) {
+                    const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
+                    window.location.href = `edit_user.html${queryParams}`;
+                }
             }
 
             const searchBox = document.getElementById('searchBox');
             const userList = document.getElementById('userList');
 
-            // Function to render users
-            function renderUsers(users) {
-                userList.innerHTML = '';
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${user.firstName} ${user.lastName}</td>
-                        <td>${user.phone}</td>
-                        <td>${user.email}</td>
-                        <td>${user.rfid}</td>
-                    `;
-                    row.onclick = () => editUser(user);
-                    userList.appendChild(row);
-                });
-            }
-
             // Search functionality
             searchBox.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
-                const filteredUsers = users.filter(user =>
-                    user.firstName.toLowerCase().includes(searchTerm) ||
-                    user.lastName.toLowerCase().includes(searchTerm) ||
-                    user.email.toLowerCase().includes(searchTerm) ||
-                    user.rfid.toLowerCase().includes(searchTerm)
-                );
-                renderUsers(filteredUsers);
+                const rows = userList.getElementsByTagName('tr');
+                Array.from(rows).forEach(row => {
+                    const cells = row.getElementsByTagName('td');
+                    const [name, phone, email, rfid] = Array.from(cells).map(cell => cell.textContent.toLowerCase());
+                    if (name.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm) || rfid.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             });
-
-            // Function to navigate to edit_user.html with user data
-            function editUser(user) {
-                const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
-                window.location.href = `edit_user.html${queryParams}`;
-            }
         });
     </script>
 </body>
