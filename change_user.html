@@ -128,4 +128,23 @@
             }
 
             // Search functionality
-            search
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const filteredUsers = users.filter(user =>
+                    user.firstName.toLowerCase().includes(searchTerm) ||
+                    user.lastName.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm) ||
+                    user.rfid.toLowerCase().includes(searchTerm)
+                );
+                renderUsers(filteredUsers);
+            });
+
+            // Function to navigate to edit_user.html with user data
+            function editUser(user) {
+                const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
+                window.location.href = `edit_user.html${queryParams}`;
+            }
+        });
+    </script>
+</body>
+</html>
