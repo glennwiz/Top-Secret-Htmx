@@ -98,89 +98,89 @@
         </table>
     </main>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("DOMContentLoaded event fired");
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOMContentLoaded event fired");
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const companyID = urlParams.get('companyID');
-        console.log("companyID:", companyID);
+            const urlParams = new URLSearchParams(window.location.search);
+            const companyID = urlParams.get('companyID');
+            console.log("companyID:", companyID);
 
-        if (companyID) {
-            const userList = document.querySelector('#userList');
-            const usersUrl = `https://localhost:7077/api/company/${companyID}/users`;
-            console.log("usersUrl:", usersUrl);
+            if (companyID) {
+                const userList = document.querySelector('#userList');
+                const usersUrl = `https://localhost:7077/api/company/${companyID}/users`;
+                console.log("usersUrl:", usersUrl);
 
-            // Set hx-get attribute and process HTMX
-            userList.setAttribute('hx-get', usersUrl);
-            userList.removeAttribute('hx-trigger');
-            console.log("Set hx-get attribute and removed hx-trigger");
-            htmx.process(userList);
-            console.log("HTMX process called");
+                // Set hx-get attribute and process HTMX
+                userList.setAttribute('hx-get', usersUrl);
+                userList.removeAttribute('hx-trigger');
+                console.log("Set hx-get attribute and removed hx-trigger");
 
-            // Fetch users and render them
-            fetch(usersUrl)
-                .then(response => {
-                    console.log("Fetch response status:", response.status);
-                    return response.json();
-                })
-                .then(users => {
-                    console.log("Fetched users:", users);
-                    renderUsers(users);
-                })
-                .catch(error => {
-                    console.error("Fetch error:", error);
-                });
+                // Explicitly trigger the HTMX request
+                htmx.process(userList);
+                htmx.trigger(userList, 'load');
+                console.log("HTMX process called and load triggered");
 
-            // Function to render users
-            function renderUsers(users) {
-                console.log("Rendering users...");
-                userList.innerHTML = '';
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${user.firstName} ${user.lastName}</td>
-                        <td>${user.phone}</td>
-                        <td>${user.email}</td>
-                        <td>${user.rfid}</td>
-                    `;
-                    row.onclick = () => editUser(user);
-                    userList.appendChild(row);
-                });
-            }
+                // Fetch users and render them
+                fetch(usersUrl)
+                    .then(response => {
+                        console.log("Fetch response status:", response.status);
+                        return response.json();
+                    })
+                    .then(users => {
+                        console.log("Fetched users:", users);
+                        renderUsers(users);
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                    });
 
-            // Function to navigate to edit_user.html with user data
-            function editUser(user) {
-                const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
-                console.log("Navigating to edit_user.html with queryParams:", queryParams);
-                window.location.href = `edit_user.html${queryParams}`;
-            }
-        } else {
-            console.log("No companyID found in URL parameters");
-        }
-
-        const searchBox = document.getElementById('searchBox');
-        const userList = document.getElementById('userList');
-
-        // Search functionality
-        searchBox.addEventListener('input', function() {
-            console.log("Search input event fired");
-            const searchTerm = this.value.toLowerCase();
-            const rows = userList.getElementsByTagName('tr');
-            Array.from(rows).forEach(row => {
-                const cells = row.getElementsByTagName('td');
-                const [name, phone, email, rfid] = Array.from(cells).map(cell => cell.textContent.toLowerCase());
-                if (name.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm) || rfid.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+                // Function to render users
+                function renderUsers(users) {
+                    console.log("Rendering users...");
+                    userList.innerHTML = '';
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.firstName} ${user.lastName}</td>
+                            <td>${user.phone}</td>
+                            <td>${user.email}</td>
+                            <td>${user.rfid}</td>
+                        `;
+                        row.onclick = () => editUser(user);
+                        userList.appendChild(row);
+                    });
                 }
+
+                // Function to navigate to edit_user.html with user data
+                function editUser(user) {
+                    const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
+                    console.log("Navigating to edit_user.html with queryParams:", queryParams);
+                    window.location.href = `edit_user.html${queryParams}`;
+                }
+            } else {
+                console.log("No companyID found in URL parameters");
+            }
+
+            const searchBox = document.getElementById('searchBox');
+            const userList = document.getElementById('userList');
+
+            // Search functionality
+            searchBox.addEventListener('input', function() {
+                console.log("Search input event fired");
+                const searchTerm = this.value.toLowerCase();
+                const rows = userList.getElementsByTagName('tr');
+                Array.from(rows).forEach(row => {
+                    const cells = row.getElementsByTagName('td');
+                    const [name, phone, email, rfid] = Array.from(cells).map(cell => cell.textContent.toLowerCase());
+                    if (name.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm) || rfid.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             });
         });
-    });
-</script>
-
-    
+    </script>
 </body>
 </html>
-
