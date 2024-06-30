@@ -96,8 +96,8 @@
         // Function to update the companyID in the header
         function updateCompanyID() {
             const selectElement = document.getElementById('company-select');
-            const selectedCompanyID = selectElement.value;
-            document.getElementById('companyID').textContent = selectedCompanyID ? selectedCompanyID : 'unknown';
+            const selectedCompanyName = selectElement.options[selectElement.selectedIndex].text;
+            document.getElementById('companyID').textContent = selectedCompanyName ? selectedCompanyName : 'unknown';
         }
     </script>
 </body>
