@@ -1,165 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Change Existing User</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-image: url('https://ams3.digitaloceanspaces.com/rswebstorage/Munu/MunuLogo/AppIcon/favicon/Desktop1totest.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-        header {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            position: relative;
-            height: 60px;
-        }
-        header img {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 40px;
-        }
-        main {
-            text-align: center;
-            margin: 20px auto;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 800px;
-        }
-        form {
-            display: inline-block;
-            text-align: left;
-        }
-        .form-field {
-            text-align: center;
-        }
-        input {
-            display: block;
-            margin: 10px auto;
-            padding: 10px;
-            width: 300px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px 10px;
-            display: inline-block;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-    <script src="https://unpkg.com/htmx.org"></script>
-</head>
-<body>
-    <header id="header">
-        <img src="https://ams3.digitaloceanspaces.com/rswebstorage/Munu/MunuLogo/Logo/PNG/MunuLogoText-Blue-250x.png" alt="Company Logo">
-        <strong>Change Existing User</strong>
-        <button onclick="window.location.href = 'create_user.html';">Add New User</button>
-    </header>
-    <main>
-        <input type="text" id="searchBox" placeholder="Look for employees...">
-        <table id="userTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>RFID</th>
-                </tr>
-            </thead>
-            <tbody id="userList">
-                <tr>
-                    <td colspan="4">Loading...</td>
-                </tr>
-            </tbody>
-        </table>
-    </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOMContentLoaded event fired");
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const companyID = urlParams.get('companyID');
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyID = urlParams.get('companyID');
+        console.log("companyID:", companyID);
 
-            if (companyID) {
-                const userList = document.querySelector('#userList');
-                const usersUrl = `https://localhost:7077/api/company/${companyID}/users`;
-                
-                // Set hx-get attribute and process HTMX
-                userList.setAttribute('hx-get', usersUrl);
-                userList.removeAttribute('hx-trigger');
-                htmx.process(userList);
+        if (companyID) {
+            const userList = document.querySelector('#userList');
+            const usersUrl = `https://localhost:7077/api/company/${companyID}/users`;
+            console.log("usersUrl:", usersUrl);
 
-                // Fetch users and render them
-                fetch(usersUrl)
-                    .then(response => response.json())
-                    .then(users => {
-                        renderUsers(users);
-                    });
+            // Set hx-get attribute and process HTMX
+            userList.setAttribute('hx-get', usersUrl);
+            userList.removeAttribute('hx-trigger');
+            console.log("Set hx-get attribute and removed hx-trigger");
+            htmx.process(userList);
+            console.log("HTMX process called");
 
-                // Function to render users
-                function renderUsers(users) {
-                    userList.innerHTML = '';
-                    users.forEach(user => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${user.firstName} ${user.lastName}</td>
-                            <td>${user.phone}</td>
-                            <td>${user.email}</td>
-                            <td>${user.rfid}</td>
-                        `;
-                        row.onclick = () => editUser(user);
-                        userList.appendChild(row);
-                    });
-                }
+            // Fetch users and render them
+            fetch(usersUrl)
+                .then(response => {
+                    console.log("Fetch response status:", response.status);
+                    return response.json();
+                })
+                .then(users => {
+                    console.log("Fetched users:", users);
+                    renderUsers(users);
+                })
+                .catch(error => {
+                    console.error("Fetch error:", error);
+                });
 
-                // Function to navigate to edit_user.html with user data
-                function editUser(user) {
-                    const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
-                    window.location.href = `edit_user.html${queryParams}`;
-                }
+            // Function to render users
+            function renderUsers(users) {
+                console.log("Rendering users...");
+                userList.innerHTML = '';
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.phone}</td>
+                        <td>${user.email}</td>
+                        <td>${user.rfid}</td>
+                    `;
+                    row.onclick = () => editUser(user);
+                    userList.appendChild(row);
+                });
             }
 
-            const searchBox = document.getElementById('searchBox');
-            const userList = document.getElementById('userList');
+            // Function to navigate to edit_user.html with user data
+            function editUser(user) {
+                const queryParams = `?firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
+                console.log("Navigating to edit_user.html with queryParams:", queryParams);
+                window.location.href = `edit_user.html${queryParams}`;
+            }
+        } else {
+            console.log("No companyID found in URL parameters");
+        }
 
-            // Search functionality
-            searchBox.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const rows = userList.getElementsByTagName('tr');
-                Array.from(rows).forEach(row => {
-                    const cells = row.getElementsByTagName('td');
-                    const [name, phone, email, rfid] = Array.from(cells).map(cell => cell.textContent.toLowerCase());
-                    if (name.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm) || rfid.includes(searchTerm)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+        const searchBox = document.getElementById('searchBox');
+        const userList = document.getElementById('userList');
+
+        // Search functionality
+        searchBox.addEventListener('input', function() {
+            console.log("Search input event fired");
+            const searchTerm = this.value.toLowerCase();
+            const rows = userList.getElementsByTagName('tr');
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                const [name, phone, email, rfid] = Array.from(cells).map(cell => cell.textContent.toLowerCase());
+                if (name.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm) || rfid.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
         });
-    </script>
-</body>
-</html>
+    });
+</script>
