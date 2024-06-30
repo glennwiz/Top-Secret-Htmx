@@ -89,8 +89,8 @@
 
         // Function to get companyID from the URL
         function getCompanyID() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('companyID') || document.getElementById('companyID').textContent || 'unknown';
+            const selectElement = document.getElementById('company-select');
+            return selectElement.value || document.getElementById('companyID').textContent || 'unknown';
         }
 
         // Function to update the companyID in the header
