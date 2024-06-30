@@ -62,19 +62,23 @@
             margin-bottom: 10px;
         }
     </style>
-     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 <body>
     <header id="header">
         <img src="https://ams3.digitaloceanspaces.com/rswebstorage/Munu/MunuLogo/Logo/PNG/MunuLogoText-Blue-250x.png" alt="Company Logo">
-        <strong>Hi, you are now editing users for <span id="companyID"></span></strong>
+        <strong>Hi, you are now editing users for <span id="companyID"></span></strong> 
     </header>
     <main>
         <button onclick="window.location.href='create_user.html?companyID=' + getCompanyID()">Create New User</button>
-</br>
+        </br>
         <button onclick="window.location.href='change_user.html?companyID=' + getCompanyID()">Change Existing User</button>
+        <div class="company-list" hx-get="https://localhost:7077/api/companies" hx-trigger="load" hx-target="#company-select" hx-swap="innerHTML">
+            <select id="company-select">
+                <option value="">Select a company</option>
+            </select>
+        </div>
     </main>
-
     <script>
         // JavaScript to extract companyID from the URL
         window.onload = function() {
