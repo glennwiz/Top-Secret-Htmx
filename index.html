@@ -19,12 +19,12 @@
             text-align: center;
             border-bottom: 1px solid #ddd;
             position: relative;
-            height: 60px; /* Adjusted height to accommodate the logo */
+            height: 60px;
         }
         header img {
             position: absolute;
             left: 10px;
-            top: 50%; /* Vertically center the logo */
+            top: 50%;
             transform: translateY(-50%);
             height: 40px;
         }
@@ -34,7 +34,7 @@
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
-            max-width: 800px; /* Adjust as needed */
+            max-width: 800px;
         }
         form {
             display: inline-block;
@@ -54,7 +54,7 @@
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            margin: 10px 5px; /* Adjusted margin */
+            margin: 10px 5px;
             display: inline-block;
         }
         .button-container {
@@ -80,24 +80,38 @@
         </div>
     </main>
     <script>
-        // JavaScript to extract companyID from the URL
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const companyID = urlParams.get('companyID');
-            document.getElementById('companyID').textContent = companyID ? companyID : 'unknown';
-        };
+            if (companyID) {
+                document.getElementById('companyID').textContent = companyID;
+            }
 
-        // Function to get companyID from the URL
+            // Add event listener for when HTMX finishes loading the companies
+            document.body.addEventListener('htmx:afterSwap', function(event) {
+                if (event.detail.target.id === 'company-select') {
+                    updateCompanyIDWithFirst();
+                }
+            });
+        });
+
         function getCompanyID() {
             const selectElement = document.getElementById('company-select');
             return selectElement.value || document.getElementById('companyID').textContent || 'unknown';
         }
 
-        // Function to update the companyID in the header
         function updateCompanyID() {
             const selectElement = document.getElementById('company-select');
             const selectedCompanyName = selectElement.options[selectElement.selectedIndex].text;
             document.getElementById('companyID').textContent = selectedCompanyName ? selectedCompanyName : 'unknown';
+        }
+
+        function updateCompanyIDWithFirst() {
+            const selectElement = document.getElementById('company-select');
+            if (selectElement.options.length > 1) {
+                selectElement.selectedIndex = 1; // Select the first company (index 1, as 0 is the placeholder)
+                updateCompanyID();
+            }
         }
     </script>
 </body>
