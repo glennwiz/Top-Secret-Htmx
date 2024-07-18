@@ -154,10 +154,10 @@
 
                 // Function to navigate to edit_user.html with user data
                 function editUser(user) {
-                    const queryParams = `?userId=${encodeURIComponent(user.id)}&firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}&mobile=${encodeURIComponent(user.mobilePhone)}&email=${encodeURIComponent(user.emailAddress)}`;
-                    console.log("Navigating to edit_user.html with queryParams:", queryParams);
-                    window.location.href = `edit_user.html${queryParams}`;
-                }
+    const queryParams = `?userId=${encodeURIComponent(user.id)}&firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}&mobile=${encodeURIComponent(user.mobilePhone)}&email=${encodeURIComponent(user.emailAddress)}&rfid=${encodeURIComponent(user.rfid)}`;
+    console.log("Navigating to edit_user.html with queryParams:", queryParams);
+    window.location.href = `edit_user.html${queryParams}`;
+}
             } else {
                 console.log("No companyID found in URL parameters");
             }
