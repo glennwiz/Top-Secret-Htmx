@@ -77,7 +77,7 @@
     <header id="header">
         <img src="https://ams3.digitaloceanspaces.com/rswebstorage/Munu/MunuLogo/Logo/PNG/MunuLogoText-Blue-250x.png" alt="Company Logo">
         <strong>Change Existing User</strong>
-        <button onclick="window.location.href = 'create_user.html';">Add New User</button>
+        <button onclick="navigateToCreateUser()">Add New User</button>
     </header>
     <main>
         <input type="text" id="searchBox" placeholder="Look for employees...">
@@ -99,6 +99,19 @@
     </main>
 
     <script>
+
+        function navigateToCreateUser() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const companyID = urlParams.get('companyID');
+            if (companyID) {
+                window.location.href = `create_user.html?companyID=${encodeURIComponent(companyID)}`;
+            } else {
+                console.error("No companyID found in URL parameters");
+                // Optionally, you can show an alert to the user
+                alert("Unable to create a new user. Company ID is missing.");
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOMContentLoaded event fired");
 
