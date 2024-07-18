@@ -122,11 +122,17 @@
                 LastName: document.getElementById('lastName').value,
                 MobilePhone: document.getElementById('mobile').value,
                 EmailAddress: document.getElementById('email').value,
-                // You may need to add other fields here if they're required by your API
+                // Add other fields as needed
             };
     
-            fetch(`https://htmx-backend.azurewebsites.net/api/user/${userId}`, {
-                method: 'PUT',
+            const url = userId 
+                ? `https://htmx-backend.azurewebsites.net/api/user/${userId}`
+                : 'https://htmx-backend.azurewebsites.net/api/user';
+    
+            const method = userId ? 'PUT' : 'POST';
+    
+            fetch(url, {
+                method: method,
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'application/json'
@@ -135,11 +141,14 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    console.error('Response status:', response.status);
+                    console.error('Response text:', response.text());
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('Success:', data);
                 alert('User updated successfully!');
                 // Optionally redirect or update UI
             })
