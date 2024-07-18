@@ -99,21 +99,17 @@
     
         // Extract user details from URL
         const userId = getUrlParameter('userId');
-        const firstName = getUrlParameter('FirstName');
-        const lastName = getUrlParameter('LastName');
-        const mobile = getUrlParameter('MobilePhone');
-        const email = getUrlParameter('EmailAddress');
-        const uuId = getUrlParameter('UuId');
-        const accountType = getUrlParameter('AccountType');
-        const companyId = getUrlParameter('CompanyId');
-        const status = getUrlParameter('Status');
+        const firstName = getUrlParameter('firstName');
+        const lastName = getUrlParameter('lastName');
+        const mobile = getUrlParameter('mobile');
+        const email = getUrlParameter('email');
     
         // Populate form fields with extracted values when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', (event) => {
-            document.getElementById('firstName').value = firstName;
-            document.getElementById('lastName').value = lastName;
-            document.getElementById('mobile').value = mobile;
-            document.getElementById('email').value = email;
+            document.getElementById('firstName').value = firstName !== 'null' ? firstName : '';
+            document.getElementById('lastName').value = lastName !== 'null' ? lastName : '';
+            document.getElementById('mobile').value = mobile !== 'null' ? mobile : '';
+            document.getElementById('email').value = email !== 'null' ? email : '';
             document.getElementById('userName').textContent = `${firstName} ${lastName}`;
         });
     
@@ -122,14 +118,11 @@
             event.preventDefault();
             
             const updatedUser = {
-                UuId: uuId,
                 FirstName: document.getElementById('firstName').value,
                 LastName: document.getElementById('lastName').value,
                 MobilePhone: document.getElementById('mobile').value,
                 EmailAddress: document.getElementById('email').value,
-                AccountType: accountType,
-                CompanyId: parseInt(companyId),
-                Status: status
+                // You may need to add other fields here if they're required by your API
             };
     
             fetch(`https://htmx-backend.azurewebsites.net/api/user/${userId}`, {
