@@ -73,7 +73,7 @@
         <button onclick="window.location.href='create_user.html?companyID=' + getCompanyID()">Create New User</button>
         </br>
         <button onclick="window.location.href='change_user.html?companyID=' + getCompanyID()">Change Existing User</button>
-        <div class="company-list" hx-get="https://localhost:7077/api/companies" hx-trigger="load" hx-target="#company-select" hx-swap="innerHTML">
+        <div class="company-list" hx-get="https://htmx-backend.azurewebsites.net/api/companies" hx-trigger="load" hx-target="#company-select" hx-swap="innerHTML">
             <select id="company-select" onchange="updateCompanyID()">
                 <option value="">Select a company</option>
             </select>

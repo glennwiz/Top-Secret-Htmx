@@ -108,7 +108,7 @@
 
             if (companyID) {
                 const userList = document.querySelector('#userList');
-                const usersUrl = `https://localhost:7077/api/company/${companyID}/users`;
+                const usersUrl = `https://htmx-backend.azurewebsites.net/api/company/${companyID}/users`;
                 console.log("usersUrl:", usersUrl);
 
                 // Set hx-get attribute and process HTMX
