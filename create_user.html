@@ -43,7 +43,7 @@
         .form-field {
             text-align: center;
         }
-        input {
+        input, select {
             display: block;
             margin: 10px auto;
             padding: 10px;
@@ -57,19 +57,6 @@
             margin: 10px 10px;
             display: inline-block;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-         }
         #message {
             margin-top: 20px;
             padding: 10px;
@@ -96,19 +83,33 @@
     <main>
         <form id="userForm">
             <div class="form-field">
+                <input type="text" id="salaryNum" placeholder="Salary Number" required>
+            </div>
+            <div class="form-field">
                 <input type="text" id="firstName" placeholder="First name" required>
             </div>
             <div class="form-field">
                 <input type="text" id="lastName" placeholder="Last name" required>
             </div>
             <div class="form-field">
-                <input type="text" id="mobile" placeholder="tex 4712345678" required>
+                <input type="tel" id="mobile" placeholder="Mobile Phone (e.g., +4790011237)" required>
             </div>
             <div class="form-field">
-                <input type="email" id="email" placeholder="e-post" required>
+                <input type="email" id="email" placeholder="Email Address" required>
             </div>
             <div class="form-field">
-                <input type="text" id="rfid" placeholder="RFID">
+                <select id="accountType" required>
+                    <option value="">Select Account Type</option>
+                    <option value="debit">Debit</option>
+                    <option value="credit">Credit</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <select id="status" required>
+                    <option value="">Select Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
             </div>
             <div class="form-field">
                 <button type="submit">Submit</button>
@@ -130,15 +131,17 @@
 
         function handleSubmit(event) {
             event.preventDefault();
+            const salaryNum = document.getElementById('salaryNum').value;
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
             const mobile = document.getElementById('mobile').value;
             const email = document.getElementById('email').value;
-            const rfid = document.getElementById('rfid').value;
+            const accountType = document.getElementById('accountType').value;
+            const status = document.getElementById('status').value;
             const companyID = new URLSearchParams(window.location.search).get('companyID');
 
-            if (!firstName || !lastName || !mobile || !email) {
-                showMessage('All fields except RFID are mandatory.', 'error');
+            if (!salaryNum || !firstName || !lastName || !mobile || !email || !accountType || !status) {
+                showMessage('All fields are mandatory.', 'error');
                 return;
             }
 
@@ -148,12 +151,17 @@
             }
 
             const userData = {
-                RFID: rfid,
+                UuId: generateUUID(),
+                SalaryNum: salaryNum,
                 FirstName: firstName,
                 LastName: lastName,
                 MobilePhone: mobile,
                 EmailAddress: email,
-                CompanyId: companyID
+                AccountType: accountType,
+                Status: status,
+                CompanyId: parseInt(companyID),
+                BenefitId: 0,
+                BenefitName: ""
             };
 
             createUser(userData);
@@ -199,6 +207,13 @@
         function validateEmail(email) {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(String(email).toLowerCase());
+        }
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
         }
     </script>
 </body>
