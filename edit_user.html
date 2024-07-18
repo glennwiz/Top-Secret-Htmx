@@ -96,28 +96,66 @@
             const results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
-
-        // Extract first name, last name, mobile, and email from URL
-        const firstName = getUrlParameter('firstName');
-        const lastName = getUrlParameter('lastName');
-        const mobile = getUrlParameter('mobile');
-        const email = getUrlParameter('email');
-
+    
+        // Extract user details from URL
+        const userId = getUrlParameter('userId');
+        const firstName = getUrlParameter('FirstName');
+        const lastName = getUrlParameter('LastName');
+        const mobile = getUrlParameter('MobilePhone');
+        const email = getUrlParameter('EmailAddress');
+        const uuId = getUrlParameter('UuId');
+        const accountType = getUrlParameter('AccountType');
+        const companyId = getUrlParameter('CompanyId');
+        const status = getUrlParameter('Status');
+    
         // Populate form fields with extracted values when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', (event) => {
             document.getElementById('firstName').value = firstName;
             document.getElementById('lastName').value = lastName;
             document.getElementById('mobile').value = mobile;
             document.getElementById('email').value = email;
+            document.getElementById('userName').textContent = `${firstName} ${lastName}`;
         });
-
-        // Event listener for form submission (dummy alert for demonstration)
+    
+        // Event listener for form submission
         document.getElementById('userForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            alert('Form submitted successfully!');
-            // Add your form submission logic here
+            
+            const updatedUser = {
+                UuId: uuId,
+                FirstName: document.getElementById('firstName').value,
+                LastName: document.getElementById('lastName').value,
+                MobilePhone: document.getElementById('mobile').value,
+                EmailAddress: document.getElementById('email').value,
+                AccountType: accountType,
+                CompanyId: parseInt(companyId),
+                Status: status
+            };
+    
+            fetch(`https://htmx-backend.azurewebsites.net/api/user/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedUser)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('User updated successfully!');
+                // Optionally redirect or update UI
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update user. Please try again.');
+            });
         });
-
+    
         // Event listener for go back button
         document.getElementById('goBackButton').addEventListener('click', function() {
             window.location.href = 'change_user.html'; // Replace with your actual page URL
